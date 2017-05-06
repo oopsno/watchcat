@@ -80,6 +80,8 @@ struct UniformedError {
   nvmlReturn_t nvml_error;
 };
 
+extern UniformedError defaultErrorHandler;
+
 }
 
 #endif //GLEEMAN_ERROR_HPP

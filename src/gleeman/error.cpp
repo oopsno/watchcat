@@ -1,7 +1,8 @@
 #include "gleeman/error.hpp"
-#include "gleeman/uniform.hpp"
 
 namespace gleeman {
+
+gleeman::UniformedError defaultErrorHandler;
 
 const CUresult error_traits<CUresult>::success = CUDA_SUCCESS;
 const cudaError_t error_traits<cudaError_t>::success = cudaSuccess;
