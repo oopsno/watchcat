@@ -6,14 +6,11 @@
 namespace gleeman {
 
 Device::Device(uint16_t device_id) : device_id(device_id) {
-  cudaGetDeviceProperties(&this->properties, device_id);
+  cudaGetDeviceProperties(&this->property, device_id);
 }
 
 std::tuple<size_t, size_t> Device::memory_information() const {
-  size_t total, free;
-  UniformedError error;
-  error << cudaMemGetInfo(&free, &total);
-  return std::make_tuple(free, total);
+  return CVT_CALL(cudaMemGetInfo);
 }
 
 Device Device::current() {

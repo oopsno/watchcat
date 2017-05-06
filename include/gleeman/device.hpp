@@ -18,8 +18,13 @@ struct Device {
   static Device current();
   std::tuple<size_t, size_t> memory_information() const;
 
-  cudaDeviceProp properties;
+  const cudaDeviceProp &properties() const {
+    return property;
+  }
+
   const uint16_t device_id;
+ private:
+  cudaDeviceProp property;
 };
 
 struct Devices {
