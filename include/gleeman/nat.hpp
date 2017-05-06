@@ -9,11 +9,14 @@ namespace nat {
 struct Z {
   static constexpr size_t value = 0;
 };
+constexpr size_t Z::value;
 
 template<typename Nat>
 struct S : Nat {
   static constexpr size_t value = 1 + Nat::value;
 };
+template<typename Nat>
+constexpr size_t S<Nat>::value;
 
 template<size_t N>
 struct construct {
@@ -23,6 +26,32 @@ struct construct {
 template<>
 struct construct<0> {
   using type = Z;
+};
+
+template<typename LHS, typename RHS>
+struct add;
+
+template<typename Result>
+struct add<Result, Z> {
+  using type = Result;
+};
+
+template<typename LHS, typename Next>
+struct add<LHS, S<Next>> {
+  using type = typename add<S<LHS>, Next>::type;
+};
+
+template<typename LHS, typename RHS>
+struct mul;
+
+template<typename Result>
+struct mul<Result, Z> {
+  using type = Z;
+};
+
+template<typename LHS, typename Next>
+struct mul<LHS, S<Next>> {
+  using type = typename add<LHS, typename mul<LHS, Next>::type>::type;
 };
 
 }
