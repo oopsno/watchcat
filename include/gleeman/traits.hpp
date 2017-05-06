@@ -4,6 +4,8 @@
 #include <type_traits>
 #include <string>
 
+#include "gleeman/error.hpp"
+
 namespace gleeman {
 
 template<typename T>
@@ -13,6 +15,15 @@ struct unary_function_traits<R(P0)> {
   static constexpr size_t parameters = 1;
   using return_type = R;
   using parameter_type_0 = P0;
+  typedef R function_t(P0);
+
+  using getter_value_type = std::remove_pointer_t<parameter_type_0>;
+  static getter_value_type convert(function_t fn) {
+    getter_value_type value;
+    UniformedError error;
+    error << fn(&value);
+    return value;
+  }
 };
 template<typename R, typename P0>
 const size_t unary_function_traits<R(P0)>::parameters;
@@ -81,4 +92,7 @@ struct function_traits<Return(Parameters...)> :
 };
 
 }
+
+#define CVT_CALL(fn) function_traits<decltype(fn)>::convert(fn)
+
 #endif //GLEEMAN_TRAITS_HPP
