@@ -23,10 +23,10 @@ TEST_CASE("gleeman::UniformedError") {
   }
 
   SECTION("operator=") {
-    CHECK_THROWS_AS(error.handle(CUDA_ERROR_OUT_OF_MEMORY), std::runtime_error);
+    CHECK_THROWS_AS(error.handle(CUDA_ERROR_OUT_OF_MEMORY), gleeman::GleemanError);
     REQUIRE(error == CUDA_ERROR_OUT_OF_MEMORY);
 
-    CHECK_THROWS_AS(error.handle(cudaErrorMemoryAllocation), std::runtime_error);
+    CHECK_THROWS_AS(error.handle(cudaErrorMemoryAllocation), gleeman::GleemanError);
     REQUIRE(error == cudaErrorMemoryAllocation);
 
 #ifdef USE_NVML

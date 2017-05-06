@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include "gleeman/uniform.hpp"
+#include "gleeman/exception.hpp"
 
 namespace gleeman {
 
@@ -60,12 +61,11 @@ struct UniformedError {
     return driver_error == error.driver_error && runtime_error == error.runtime_error && nvml_error == error.nvml_error;
   }
 
-  template<typename Error, typename=error_traits<Error>>
+  template<typename Error, typename Traits=error_traits<Error>>
   inline UniformedError &handle(Error error) {
-    this->operator=(error);
-    using traits = error_traits<Error>;
-    if (error != traits::success) {
-      throw std::runtime_error(traits::what(error));
+    *this = error;
+    if (error != Traits::success) {
+      throw GleemanError(Traits::what(error));
     }
     return *this;
   }
