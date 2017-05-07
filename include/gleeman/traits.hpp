@@ -8,6 +8,18 @@
 
 namespace gleeman {
 
+template<typename T, typename...>
+using _1st = T;
+
+template<typename, typename T, typename...>
+using _2nd = T;
+
+template<typename, typename, typename T, typename...>
+using _3rd = T;
+
+template<typename, typename, typename, typename T, typename...>
+using _4th = T;
+
 template<typename T>
 struct unary_function_traits;
 template<typename R, typename P0>
@@ -17,9 +29,8 @@ struct unary_function_traits<R(P0)> {
   using parameter_type_0 = P0;
   typedef R function_t(P0);
 
-  using getter_value_type = std::remove_pointer_t<P0>;
-  static getter_value_type convert(function_t fn) {
-    getter_value_type value;
+  static auto convert(function_t fn) {
+    std::remove_pointer_t<P0> value;
     defaultErrorHandler << fn(&value);
     return value;
   }
@@ -37,25 +48,21 @@ struct binary_function_traits<R(P0, P1)> {
   using parameter_type_1 = P1;
   typedef R function_t(P0, P1);
 
-  using fst_t = std::remove_pointer_t<P0>;
-  using snd_t = std::remove_pointer_t<P1>;
-
-  using getter_value_type = std::tuple<fst_t, snd_t >;
-  static getter_value_type convert(function_t fn) {
-    fst_t fst;
-    snd_t snd;
+  static auto convert(function_t fn) {
+    std::remove_pointer_t<P0> fst;
+    std::remove_pointer_t<P1> snd;
     defaultErrorHandler << fn(&fst, &snd);
     return std::make_tuple(fst, snd);
   }
 
-  static fst_t convert_r(function_t fn, P1 snd) {
-    fst_t fst;
+  static auto convert_r(function_t fn, P1 snd) {
+    std::remove_pointer_t<P0> fst;
     defaultErrorHandler << fn(&fst, snd);
     return fst;
   }
 
-  static snd_t convert_l(function_t fn, P0 fst) {
-    snd_t snd;
+  static auto convert_l(function_t fn, P0 fst) {
+    std::remove_pointer_t<P1> snd;
     defaultErrorHandler << fn(fst, &snd);
     return snd;
   }
@@ -74,6 +81,40 @@ struct ternary_function_traits<R(P0, P1, P2)> {
   using parameter_type_1 = P1;
   using parameter_type_2 = P2;
   typedef R function_t(P0, P1, P2);
+
+  static auto convert(function_t function) {
+    std::remove_pointer_t<P0> fst;
+    std::remove_pointer_t<P1> snd;
+    std::remove_pointer_t<P2> trd;
+    defaultErrorHandler << function(&fst, &snd, &trd);
+    return std::make_tuple(fst, snd, trd);
+  }
+
+  static auto convert_l(function_t function, P0 fst) {
+    std::remove_pointer_t<P1> snd;
+    std::remove_pointer_t<P2> trd;
+    defaultErrorHandler << function(fst, &snd, &trd);
+    return std::make_tuple(snd, trd);
+  }
+
+  static auto convert_l(function_t function, P0 fst, P1 snd) {
+    std::remove_pointer_t<P2> trd;
+    defaultErrorHandler << function(fst, snd, &trd);
+    return trd;
+  }
+
+  static auto convert_r(function_t function, P2 trd) {
+    std::remove_pointer_t<P0> fst;
+    std::remove_pointer_t<P1> snd;
+    defaultErrorHandler << function(&fst, &snd, trd);
+    return std::make_tuple(fst, snd);
+  }
+
+  static auto convert_r(function_t function, P1 snd, P2 trd) {
+    std::remove_pointer_t<P0> fst;
+    defaultErrorHandler << function(&fst, snd, trd);
+    return fst;
+  }
 };
 template<typename R, typename P0, typename P1, typename P2>
 const size_t ternary_function_traits<R(P0, P1, P2)>::parameters;

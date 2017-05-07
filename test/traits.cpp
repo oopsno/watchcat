@@ -3,6 +3,19 @@
 
 #include "gleeman/traits.hpp"
 
+TEST_CASE("gleeman::_nth") {
+  using namespace gleeman;
+  constexpr bool get_1st = std::is_same<_1st<void, char, int, float>, void>::value;
+  constexpr bool get_2nd = std::is_same<_2nd<void, char, int, float>, char>::value;
+  constexpr bool get_3rd = std::is_same<_3rd<void, char, int, float>, int>::value;
+  constexpr bool get_4th = std::is_same<_4th<void, char, int, float>, float>::value;
+
+  REQUIRE(get_1st);
+  REQUIRE(get_2nd);
+  REQUIRE(get_3rd);
+  REQUIRE(get_4th);
+}
+
 TEST_CASE("gleeman::unary_function_traits") {
   using traits = gleeman::unary_function_traits<decltype(nvmlDeviceGetCount)>;
   bool require_uint32p = std::is_same<traits::parameter_type_0, unsigned int *>::value;
