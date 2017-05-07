@@ -6,12 +6,12 @@
 
 namespace gleeman {
 
-class GleemanError : public std::exception {
+class GleemanError : public std::runtime_error {
  public:
   GleemanError(std::string what);
 };
 
-class NoNVMLError : public std::runtime_error {
+class NoNVMLError : public GleemanError {
  public:
   NoNVMLError(std::string what);
 };
