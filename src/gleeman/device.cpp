@@ -6,7 +6,7 @@
 namespace gleeman {
 
 Device::Device(uint16_t device_id) : device_id(device_id) {
-  cudaGetDeviceProperties(&this->property, device_id);
+  defaultErrorHandler << cudaGetDeviceProperties(&property, device_id);
 }
 
 std::tuple<size_t, size_t> Device::memory_information() const {
