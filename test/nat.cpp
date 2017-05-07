@@ -15,6 +15,19 @@ TEST_CASE("gleeman::nat::construct") {
   REQUIRE(N4().value == I4);
 }
 
+TEST_CASE("gleeman::nat::is_nat") {
+  using namespace gleeman::nat;
+  using N0 = Z;
+  using N4 = S<S<S<S<Z>>>>;
+  constexpr bool n0_is_nat = is_nat<N0>::value;
+  constexpr bool n4_is_nat = is_nat<N4>::value;
+  constexpr bool void_is_not_nat = !is_nat<void>::value;
+
+  REQUIRE( n0_is_nat );
+  REQUIRE( n4_is_nat );
+  REQUIRE( void_is_not_nat );
+}
+
 TEST_CASE("gleeman::nat::mul") {
   constexpr size_t I3 = 3, I7 = 7;
   using N3  = construct<I3>::type;

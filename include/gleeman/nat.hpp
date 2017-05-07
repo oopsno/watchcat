@@ -18,6 +18,15 @@ struct S : Nat {
 template<typename Nat>
 constexpr size_t S<Nat>::value;
 
+template<typename T>
+struct is_nat : std::false_type {};
+
+template<>
+struct is_nat<Z> : std::true_type {};
+
+template<typename Next>
+struct is_nat<S<Next>> : is_nat<Next> {};
+
 template<size_t N>
 struct construct {
   using type = S<typename construct<N - 1>::type>;
