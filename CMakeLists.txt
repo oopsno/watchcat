@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 if (NOT APPLE)
     find_package(CUDA 8.0 COMPONENTS nvml)
+    set(USE_CUDA YES)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_CUDA")
     set(CUDA_RUNTIME ${CUDA_LIBRARIES})
     if (WIN32)
@@ -46,11 +47,17 @@ add_library(gleeman-universal src/gleeman/error.cpp
                               src/gleeman/executable.cpp)
 target_link_libraries(gleeman-universal cryptopp-static)
 
+if (USE_CUDA)
 add_library(gleeman-device src/gleeman/device.cpp)
 target_link_libraries(gleeman-device ${CUDA_RUNTIME} ${CUDA_DRIVER})
+endif()
 
 add_executable(gleeman src/gleeman.cpp)
+if (USE_CUDA)
 target_link_libraries(gleeman gleeman-universal gleeman-device)
+else()
+target_link_libraries(gleeman gleeman-universal)
+endif()
 
 enable_testing()
 set(CATCH_MAIN test/catch_main.cpp)
