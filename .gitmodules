@@ -4,3 +4,6 @@
 [submodule "3rd/cryptopp"]
 	path = 3rd/cryptopp
 	url = https://github.com/weidai11/cryptopp.git
+[submodule "3rd/Catch"]
+	path = 3rd/Catch
+	url = https://github.com/philsquared/Catch.git

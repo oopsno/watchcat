@@ -17,17 +17,14 @@ endif()
 find_package(Boost 1.63 REQUIRED)
 add_subdirectory(3rd/yaml-cpp)
 add_subdirectory(3rd/cryptopp)
+add_subdirectory(3rd/Catch)
 
 set(PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 include_directories(${PROJECT_INCLUDE_DIR}
                     ${Boost_INCLUDE_DIRS}
                     3rd/yaml-cpp/include
-                    3rd/cryptopp)
-
-include(cmake/catch.cmake)
-set(CATCH_VERSION 1.9.3)
-set(CATCH_SHA224  71871bcb95073f77fc29827b5a9dbbeaacc6f5fc5cd192f4dfe0aa16)
-download_catch()
+                    3rd/cryptopp
+                    3rd/Catch/single_include)
 
 option(USE_NVML "enable NVML support")
 option(USE_NAT  "enable NAT  support")
