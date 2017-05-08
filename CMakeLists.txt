@@ -2,11 +2,16 @@ cmake_minimum_required (VERSION 3.5)
 project (gleeman CXX)
 
 set(CMAKE_CXX_STANDARD 14)
-find_package(CUDA  8.0  REQUIRED)
+#find_package(CUDA  8.0  REQUIRED)
 find_package(Boost 1.63 REQUIRED)
+add_subdirectory(3rd/yaml-cpp)
+add_subdirectory(3rd/cryptopp)
 
 set(PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
-include_directories(${PROJECT_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
+include_directories(${PROJECT_INCLUDE_DIR}
+                    ${Boost_INCLUDE_DIRS}
+                    3rd/yaml-cpp/include
+                    3rd/cryptopp)
 
 include(cmake/catch.cmake)
 set(CATCH_VERSION 1.9.3)
@@ -27,7 +32,7 @@ option(USE_NVML "enable NVML support")
 enable_testing()
 set(CATCH_MAIN test/catch_main.cpp)
 
-cuda_add_executable(test_traits test/traits.cpp ${CATCH_MAIN})
+add_executable(test_traits test/traits.cpp ${CATCH_MAIN})
 add_test(NAME test_traits COMMAND test_traits)
 
 add_executable(test_nat test/nat.cpp ${CATCH_MAIN})
@@ -38,5 +43,5 @@ target_link_libraries(test_error gleeman-uniform)
 add_test(NAME test_error COMMAND test_error)
 
 file(GLOB TEST_SOURCES test/*.cpp)
-cuda_add_executable(test_all ${TEST_SOURCES})
+add_executable(test_all ${TEST_SOURCES})
 target_link_libraries(test_all gleeman-uniform)
