@@ -27,13 +27,14 @@ struct ShellCommand : Executable {
 };
 
 struct Job {
-  Job(size_t gpus, size_t memory_requirement, size_t estimated_runtime,
-      std::shared_ptr<Executable> executable);
-  const std::shared_ptr<Executable> executable;
-  const size_t memory_requirement;
-  const size_t estimated_runtime;
-  const size_t gpus;
+  std::string name;
+  std::shared_ptr<Executable> executable;
+  size_t memory_requirement;
+  size_t estimated_runtime;
+  size_t gpus;
   static Job from_yaml(const std::string yaml);
+ private:
+  Job();
 };
 
 }  // name gleeman
