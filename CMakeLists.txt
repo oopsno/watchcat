@@ -2,7 +2,18 @@ cmake_minimum_required (VERSION 3.5)
 project (gleeman CXX)
 
 set(CMAKE_CXX_STANDARD 14)
-#find_package(CUDA  8.0  REQUIRED)
+
+if (NOT APPLE)
+    find_package(CUDA 8.0 COMPONENTS nvml)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_CUDA")
+    set(CUDA_RUNTIME ${CUDA_LIBRARIES})
+    if (WIN32)
+        string(REPLACE cudart_static cuda CUDA_DRIVER ${CUDA_LIBRARIES})
+        string(REPLACE cudart_static nvml CUDA_NVML   ${CUDA_LIBRARIES})
+    endif()
+    include_directories(${CUDA_INCLUDE_DIRS})
+endif()
+
 find_package(Boost 1.63 REQUIRED)
 add_subdirectory(3rd/yaml-cpp)
 add_subdirectory(3rd/cryptopp)
@@ -18,16 +29,28 @@ set(CATCH_VERSION 1.9.3)
 set(CATCH_SHA224  71871bcb95073f77fc29827b5a9dbbeaacc6f5fc5cd192f4dfe0aa16)
 download_catch()
 
-add_library(gleeman-uniform src/gleeman/error.cpp src/gleeman/uniform.cpp src/gleeman/exception.cpp src/gleeman/context.cpp)
-target_link_libraries(gleeman-uniform ${CUDA_LIBRARIES})
+option(USE_NVML "enable NVML support")
+option(USE_NAT  "enable NAT  support")
+
+if (USE_NVML)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_NVML")
+endif( )
+
+if (USE_NAT)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_NAT")
+endif()
+
+add_library(gleeman-uniform src/gleeman/error.cpp src/gleeman/uniform.cpp src/gleeman/exception.cpp src/gleeman/context.cpp src/gleeman/executable.cpp src/gleeman/yaml.cpp)
+target_link_libraries(gleeman-uniform ${CUDA_RUNTIME} ${CUDA_DRIVER})
 
 add_library(gleeman-device src/gleeman/device.cpp)
-target_link_libraries(gleeman-device ${CUDA_LIBRARIES})
+target_link_libraries(gleeman-device ${CUDA_RUNTIME} ${CUDA_DRIVER})
 
-add_executable(gleeman src/gleeman.cpp include/gleeman/context.hpp)
+add_library(gleeman-job src/gleeman/job.cpp src/gleeman/yaml.cpp src/gleeman/executable.cpp)
+target_link_libraries(gleeman-job yaml-cpp)
+
+add_executable(gleeman src/gleeman.cpp include/gleeman/context.hpp include/gleeman/yaml.hpp)
 target_link_libraries(gleeman gleeman-device gleeman-uniform)
-
-option(USE_NVML "enable NVML support")
 
 enable_testing()
 set(CATCH_MAIN test/catch_main.cpp)
