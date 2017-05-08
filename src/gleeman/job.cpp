@@ -1,5 +1,6 @@
 #include "gleeman/job.hpp"
 #include "gleeman/yaml.hpp"
+#include "gleeman/crypto.hpp"
 
 using size_t = std::size_t;
 
@@ -9,7 +10,7 @@ Job::Job() {}
 Job Job::from_yaml(const std::string yaml) {
   auto job = Job();
   const auto node = YAML::Load(yaml);
-  job.name = get(node, "name", std::string("NewYAMLJob"));
+  job.name = get(node, "name", sha224(yaml));
   job.memory_requirement = parse_gram(node["gram"].as<std::string>());
   job.estimated_runtime = parse_time(node["time"].as<std::string>());
   job.gpus = get(node, "gpus", 1ULL);
@@ -18,6 +19,4 @@ Job Job::from_yaml(const std::string yaml) {
   return job;
 }
 
-}  // namespace gleeman
-
-
+} //namespace gleeman
