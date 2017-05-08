@@ -4,7 +4,7 @@
 #include <tuple>
 #include <stdexcept>
 
-#include "gleeman/uniform.hpp"
+#include "gleeman/universal.hpp"
 #include "gleeman/exception.hpp"
 
 namespace gleeman {

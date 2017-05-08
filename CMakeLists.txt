@@ -37,17 +37,20 @@ if (USE_NAT)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_NAT")
 endif()
 
-add_library(gleeman-uniform src/gleeman/error.cpp src/gleeman/uniform.cpp src/gleeman/exception.cpp src/gleeman/context.cpp src/gleeman/executable.cpp src/gleeman/yaml.cpp)
-target_link_libraries(gleeman-uniform ${CUDA_RUNTIME} ${CUDA_DRIVER})
+add_library(gleeman-universal src/gleeman/error.cpp
+                              src/gleeman/exception.cpp
+                              src/gleeman/context.cpp
+                              src/gleeman/crypto.cpp
+                              src/gleeman/job.cpp
+                              src/gleeman/yaml.cpp
+                              src/gleeman/executable.cpp)
+target_link_libraries(gleeman-universal cryptopp-static)
 
 add_library(gleeman-device src/gleeman/device.cpp)
 target_link_libraries(gleeman-device ${CUDA_RUNTIME} ${CUDA_DRIVER})
 
-add_library(gleeman-job src/gleeman/job.cpp src/gleeman/yaml.cpp src/gleeman/executable.cpp)
-target_link_libraries(gleeman-job yaml-cpp)
-
-add_executable(gleeman src/gleeman.cpp include/gleeman/context.hpp include/gleeman/yaml.hpp)
-target_link_libraries(gleeman gleeman-device gleeman-uniform)
+add_executable(gleeman src/gleeman.cpp)
+target_link_libraries(gleeman gleeman-universal gleeman-device)
 
 enable_testing()
 set(CATCH_MAIN test/catch_main.cpp)
