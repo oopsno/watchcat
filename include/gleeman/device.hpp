@@ -17,10 +17,12 @@ namespace gleeman {
 struct Device {
   Device(uint16_t device_id);
   static Device current();
+#ifdef USE_NAT
   template <typename Nat, typename=std::enable_if_t<is_nat<Nat>::value>>
   Device(Nat nat) : device_id(nat.value) {
     defaultErrorHandler << cudaGetDeviceProperties(&property, device_id);
   }
+#endif
   std::tuple<size_t, size_t> memory_information() const;
 
   const cudaDeviceProp &properties() const {
