@@ -3,6 +3,9 @@ project (gleeman CXX)
 
 set(CMAKE_CXX_STANDARD 14)
 
+option(USE_NVML "enable NVML support")
+option(USE_NAT  "enable NAT  support")
+
 set(CUDA_USE_STATIC_CUDA_RUNTIME NO)
 find_package(CUDA 8.0 QUIET)
 if (CUDA_FOUND)
@@ -20,14 +23,18 @@ if (CUDA_FOUND)
     list(APPEND GLEEMAN_CUDA_LIBRAIRES ${CUDA_DRIVER})
     list(APPEND GLEEMAN_CUDA_LIBRAIRES ${CUDA_RUNTIME})
     if (EXISTS ${CUDA_NVML})
-      set(USE_NVML ON)
+      set(USE_NVML YES)
       list(APPEND GLEEMAN_CUDA_LIBRAIRES ${CUDA_NVML})
+    else()
+      set(USE_NVML NO)
     endif()
   endif()
   include_directories(${CUDA_INCLUDE_DIRS})
 else()
   set(USE_CUDA NO)
+  set(USE_NVML NO)
 endif()
+
 message(STATUS ">>> USE_CUDA ${USE_CUDA}")
 message(STATUS ">>> USE_NVML ${USE_NVML}")
 
@@ -46,9 +53,6 @@ include_directories(${PROJECT_INCLUDE_DIR}
                     3rd/yaml-cpp/include
                     3rd/cryptopp
                     3rd/Catch/single_include)
-
-option(USE_NVML "enable NVML support")
-option(USE_NAT  "enable NAT  support")
 
 if (USE_NVML)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_NVML")
@@ -92,6 +96,6 @@ target_link_libraries(test_context glee)
 add_test(NAME test_context COMMAND test_context)
 
 file(GLOB TEST_SOURCES test/*.cpp)
-cuda_add_executable(test_all ${TEST_SOURCES})
+add_executable(test_all ${TEST_SOURCES})
 target_link_libraries(test_all glee)
 
