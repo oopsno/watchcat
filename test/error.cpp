@@ -1,7 +1,4 @@
-#include <catch.hpp>
-#include <nvml.h>
-#include <cuda_runtime.h>
-
+#include "gleeman/cuda_headers.hpp"
 #include "gleeman/exception.hpp"
 #include "gleeman/error.hpp"
 
@@ -14,7 +11,7 @@ TEST_CASE("gleeman::error_traits") {
 }
 
 TEST_CASE("gleeman::UniformedError") {
-  gleeman::UniformedError error;
+  gleeman::error;
 
   SECTION("default constructor") {
     REQUIRE(error == CUDA_SUCCESS);
@@ -23,10 +20,12 @@ TEST_CASE("gleeman::UniformedError") {
   }
 
   SECTION("operator=") {
-    CHECK_THROWS_AS(error.handle(CUDA_ERROR_OUT_OF_MEMORY), gleeman::GleemanError);
+    CHECK_THROWS_AS(error.handle(CUDA_ERROR_OUT_OF_MEMORY),
+                    gleeman::GleemanError);
     REQUIRE(error == CUDA_ERROR_OUT_OF_MEMORY);
 
-    CHECK_THROWS_AS(error.handle(cudaErrorMemoryAllocation), gleeman::GleemanError);
+    CHECK_THROWS_AS(error.handle(cudaErrorMemoryAllocation),
+                    gleeman::GleemanError);
     REQUIRE(error == cudaErrorMemoryAllocation);
 
 #ifdef USE_NVML
