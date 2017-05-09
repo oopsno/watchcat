@@ -30,7 +30,7 @@ std::string error_traits<cudaError_t>::what(const cudaError_t error) {
 }
 
 #ifdef USE_NVML
-const nvmlReturn_t error_traits<nvmlReturn_t>::success = nvml_success;
+const nvmlReturn_t error_traits<nvmlReturn_t>::success = NVML_SUCCESS;
 std::string error_traits<nvmlReturn_t>::what(const nvmlReturn_t error) {
   return nvmlErrorString(error);
 }
@@ -48,7 +48,7 @@ UniversalErrorHandler::UniversalErrorHandler() :
       driver_error(CUDA_SUCCESS),
       runtime_error{cudaSuccess},
 #ifdef USE_NVML
-      nvml_error(nvml_success),
+      nvml_error(NVML_SUCCESS),
 #endif //USE_CUDA
 #endif //USE_NVML
       universal_error(0) {}

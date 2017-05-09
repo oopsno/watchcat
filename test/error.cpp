@@ -40,12 +40,12 @@ TEST_CASE("gleeman::UniveralErrorHandler") {
                     gleeman::GleemanError);
     REQUIRE(error == CUDA_ERROR_OUT_OF_MEMORY);
 
-    CHECK_THROWS_AS(error.handle(cudaErrorMemoryAllocation),
+    REQUIRE_THROWS_AS(error.handle(cudaErrorMemoryAllocation),
                     gleeman::GleemanError);
     REQUIRE(error == cudaErrorMemoryAllocation);
 
 #ifdef USE_NVML
-    CHECK_THROWS_AS(error.handle(NVML_ERROR_TIMEOUT), gleeman::NoNVMLError);
+    REQUIRE_THROWS_AS(error.handle(NVML_ERROR_TIMEOUT), gleeman::GleemanError);
     REQUIRE(error == NVML_ERROR_TIMEOUT);
 #endif //USE_NVML
 #endif //USE_CUDA
