@@ -8,16 +8,16 @@ TEST_CASE("gleeman::error_traits") {
   using namespace gleeman;
   #define SUCCESS_OF_API(api) error_traits<API<api>::error_type>::success
 #ifdef USE_CUDA
-  auto driver_success    = SUCCESS_OF_API(Driver);
-  auto runtime_success   = SUCCESS_OF_API(CUDARuntime);
-  REQUIRE(driver_success == cudaSuccess);
-  REQUIRE(nvml_success   == NVML_SUCCESS);
+  auto    driver_success  =  SUCCESS_OF_API(Driver);
+  REQUIRE(driver_success  == CUDA_SUCCESS);
+  auto    runtime_success =  SUCCESS_OF_API(CUDARuntime);
+  REQUIRE(runtime_success == cudaSuccess);
 #ifdef USE_NVML
-  auto nvml_success      = SUCCESS_OF_API(NVML);
+  auto    nvml_success   =  SUCCESS_OF_API(NVML);
   REQUIRE(nvml_success   == NVML_SUCCESS);
 #endif //USE_NVML
 #endif //USE_CUDA
-  auto universal_success = SUCCESS_OF_API(Universal);
+  auto    universal_success =  SUCCESS_OF_API(Universal);
   REQUIRE(universal_success == 0);
 }
 

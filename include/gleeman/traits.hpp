@@ -164,9 +164,9 @@ struct function_traits<Return(Parameters...)> :
 
 }
 
-#define CALL(fn, ...)       function_traits<decltype(fn)>::call(fn, __VA_ARGS__)
-#define CVT_CALL(fn, ...)   function_traits<decltype(fn)>::convert(fn, __VA_ARGS__)
-#define CVT_CALL_L(fn, ...) function_traits<decltype(fn)>::convert_l(fn, __VA_ARGS__)
-#define CVT_CALL_R(fn, ...) function_traits<decltype(fn)>::convert_r(fn, __VA_ARGS__)
+#define CALL(fn, ...)       function_traits<decltype(fn)>::call(fn, ##__VA_ARGS__)
+#define CVT_CALL(fn, ...)   function_traits<decltype(fn)>::convert(fn, ##__VA_ARGS__)
+#define CVT_CALL_L(fn, ...) function_traits<decltype(fn)>::convert_l(fn, ##__VA_ARGS__)
+#define CVT_CALL_R(fn, ...) function_traits<decltype(fn)>::convert_r(fn, ##__VA_ARGS__)
 
 #endif //GLEEMAN_TRAITS_HPP

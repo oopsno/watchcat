@@ -3,6 +3,8 @@
 
 #include <type_traits>
 
+#include "gleeman/universal.hpp"
+
 namespace gleeman {
 namespace nat {
 

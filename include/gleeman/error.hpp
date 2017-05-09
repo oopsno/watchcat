@@ -32,7 +32,7 @@ struct UniversalErrorHandler {
   UniversalErrorHandler();
 
   template<typename Error>
-  Error as();
+  Error as() const;
 
   template<typename Error>
   Error operator=(Error error);

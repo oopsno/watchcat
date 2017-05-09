@@ -45,24 +45,24 @@ std::string error_traits<API<Universal>::error_type>::what(
 
 UniversalErrorHandler::UniversalErrorHandler() :
 #ifdef USE_CUDA
-    driver_error(CUDA_SUCCESS),
-    runtime_error{cudaSuccess},
+      driver_error(CUDA_SUCCESS),
+      runtime_error{cudaSuccess},
 #ifdef USE_NVML
-    nvml_error(nvml_success),
+      nvml_error(nvml_success),
 #endif //USE_CUDA
 #endif //USE_NVML
-    universal_error(0) {}
+      universal_error(0) {}
 
-#define IMPL_FIELD_TPL(name)                                              \
-  template<>                                                              \
-  decltype(UniversalErrorHandler::name)                                   \
-  UniversalErrorHandler::as<decltype(UniversalErrorHandler::name)>() {    \
-    return UniversalErrorHandler::name;                                   \
-  }                                                                       \
-  template<>                                                              \
-  decltype(UniversalErrorHandler::name) UniversalErrorHandler::operator=( \
-      decltype(UniversalErrorHandler::name) error) {                      \
-    return UniversalErrorHandler::name = error;                           \
+#define IMPL_FIELD_TPL(name)                                                 \
+  template<>                                                                 \
+  decltype(UniversalErrorHandler::name)                                      \
+  UniversalErrorHandler::as<decltype(UniversalErrorHandler::name)>() const { \
+    return UniversalErrorHandler::name;                                      \
+  }                                                                          \
+  template<>                                                                 \
+  decltype(UniversalErrorHandler::name) UniversalErrorHandler::operator=(    \
+      decltype(UniversalErrorHandler::name) error) {                         \
+    return UniversalErrorHandler::name = error;                              \
   }
 
 #ifdef USE_CUDA
