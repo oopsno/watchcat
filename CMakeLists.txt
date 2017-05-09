@@ -44,20 +44,15 @@ add_library(gleeman-universal src/gleeman/error.cpp
                               src/gleeman/crypto.cpp
                               src/gleeman/job.cpp
                               src/gleeman/yaml.cpp
-                              src/gleeman/executable.cpp)
+                              src/gleeman/executable.cpp
+                              src/gleeman/nat.cpp)
 target_link_libraries(gleeman-universal cryptopp-static)
 
-if (USE_CUDA)
 add_library(gleeman-device src/gleeman/device.cpp)
 target_link_libraries(gleeman-device ${CUDA_RUNTIME} ${CUDA_DRIVER})
-endif()
 
 add_executable(gleeman src/gleeman.cpp)
-if (USE_CUDA)
 target_link_libraries(gleeman gleeman-universal gleeman-device)
-else()
-target_link_libraries(gleeman gleeman-universal)
-endif()
 
 enable_testing()
 set(CATCH_MAIN test/catch_main.cpp)
@@ -69,9 +64,13 @@ add_executable(test_nat test/nat.cpp ${CATCH_MAIN})
 add_test(NAME test_nat COMMAND test_nat)
 
 add_executable(test_error test/error.cpp ${CATCH_MAIN})
-target_link_libraries(test_error gleeman-uniform)
+target_link_libraries(test_error gleeman-universal)
 add_test(NAME test_error COMMAND test_error)
+
+add_executable(test_context test/context.cpp ${CATCH_MAIN})
+target_link_libraries(test_context gleeman-universal)
+add_test(NAME test_context COMMAND test_context)
 
 file(GLOB TEST_SOURCES test/*.cpp)
 add_executable(test_all ${TEST_SOURCES})
-target_link_libraries(test_all gleeman-uniform)
+target_link_libraries(test_all gleeman-universal)
