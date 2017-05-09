@@ -31,6 +31,7 @@ struct Device {
 #ifdef USE_CUDA
  public:
   const cudaDeviceProp &properties() const { return property; }
+  void activate() const;
 
  private:
   cudaDeviceProp property;

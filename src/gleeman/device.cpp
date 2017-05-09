@@ -1,9 +1,8 @@
 #include <type_traits>
 
+#include "gleeman/universal.hpp"
 #include "gleeman/traits.hpp"
 #include "gleeman/device.hpp"
-#include "gleeman/context.hpp"
-#include "gleeman/exception.hpp"
 
 namespace gleeman {
 
@@ -32,13 +31,18 @@ Device Device::current() {
 #endif
 }
 
+void Device::activate() const {
+#ifdef USE_CUDA
+  defaultErrorHandler << cudaSetDevice(device_id);
+#else
+  throw_no_cuda();
+#endif
+}
+
 size_t Devices::installed_devices() {
   size_t counter = 0;
 #ifdef USE_CUDA
   counter = CVT_CALL(cudaGetDeviceCount);
-  if (std::is_signed<decltype(counter)>::value) {
-    counter = std::max(0, counter);
-  }
 #endif
   return counter;
 }
