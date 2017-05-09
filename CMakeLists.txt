@@ -15,7 +15,10 @@ if (NOT APPLE)
     include_directories(${CUDA_INCLUDE_DIRS})
 endif()
 
-find_package(Boost 1.63 REQUIRED)
+set(Boost_USE_STATIC_LIBS        ON)
+set(Boost_USE_MULTITHREADED      ON)
+find_package(Boost REQUIRED COMPONENTS program_options)
+
 add_subdirectory(3rd/yaml-cpp)
 add_subdirectory(3rd/cryptopp)
 add_subdirectory(3rd/Catch)
@@ -48,11 +51,12 @@ add_library(gleeman-universal src/gleeman/error.cpp
                               src/gleeman/nat.cpp)
 target_link_libraries(gleeman-universal cryptopp-static)
 
-add_library(gleeman-device src/gleeman/device.cpp)
+add_library(gleeman-device src/gleeman/device.cpp
+                           src/gleeman/placeholder.cpp)
 target_link_libraries(gleeman-device ${CUDA_RUNTIME} ${CUDA_DRIVER})
 
 add_executable(gleeman src/gleeman.cpp)
-target_link_libraries(gleeman gleeman-universal gleeman-device)
+target_link_libraries(gleeman gleeman-universal gleeman-device ${Boost_LIBRARIES})
 
 enable_testing()
 set(CATCH_MAIN test/catch_main.cpp)
