@@ -35,7 +35,10 @@ struct Device {
 
  private:
   cudaDeviceProp property;
-#endif
+#if USE_NVML
+  nvmlDevice_t   handle;
+#endif //USE_NVML
+#endif //USE_CUDA
 };
 
 struct Devices {

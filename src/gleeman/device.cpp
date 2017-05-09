@@ -9,12 +9,19 @@ namespace gleeman {
 
 Device::Device(uint16_t device_id) : device_id(device_id) {
 #ifdef USE_CUDA
-  defaultErrorHandler << cudaGetDeviceProperties(&property, device_id);
-#endif
+  CALL(cudaGetDeviceProperties, &property, device_id);
+#ifdef USE_NVML
+  CALL(nvmlDeviceGetHandleByIndex, device_id, &handle);
+#endif //USE_NVML
+#endif //USE_CUDA
 }
 
 std::tuple<size_t, size_t> Device::memory_information() const {
-#ifdef USE_CUDA
+#ifdef USE_NVML
+  auto mem_info = CVT_CALL_L(nvmlDeviceGetMemoryInfo, handle);
+  return std::make_tuple(mem_info.free, mem_info.total);
+#elif USE_CUDA
+  activate();
   return CVT_CALL(cudaMemGetInfo);
 #else
   throw_no_cuda();
@@ -34,7 +41,7 @@ Device Device::current() {
 
 void Device::activate() const {
 #ifdef USE_CUDA
-  defaultErrorHandler << cudaSetDevice(device_id);
+  CALL(cudaSetDevice, device_id);
 #else
   throw_no_cuda();
 #endif
@@ -42,7 +49,9 @@ void Device::activate() const {
 
 size_t Devices::installed_devices() {
   size_t counter = 0;
-#ifdef USE_CUDA
+#ifdef USE_NVML
+  counter = CVT_CALL(nvmlDeviceGetCount);
+#elif USE_CUDA
   counter = CVT_CALL(cudaGetDeviceCount);
 #endif
   return counter;
