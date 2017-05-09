@@ -16,6 +16,9 @@ class NoNVMLError : public GleemanError {
   NoNVMLError(std::string what);
 };
 
-}
+void throw_no_cuda();
+void throw_no_nvml();
 
-#endif //GLEEMAN_EXCEPTION_HPP
+} // namespace gleeman
+
+#endif // GLEEMAN_EXCEPTION_HPP

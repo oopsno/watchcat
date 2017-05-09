@@ -1,9 +1,6 @@
 #ifndef GLEEMAN_ERROR_HPP
 #define GLEEMAN_ERROR_HPP
 
-#include <tuple>
-#include <stdexcept>
-
 #include "gleeman/universal.hpp"
 #include "gleeman/exception.hpp"
 
@@ -12,57 +9,41 @@ namespace gleeman {
 template<typename Error>
 struct error_traits;
 
-template<>
-struct error_traits<CUresult> {
-  static const CUresult success;
-  static std::string what(const CUresult error);
-};
+#define STUB_ERROR_TRAITS(api)                       \
+  template<>                                         \
+  struct error_traits<API<api>::error_type> {        \
+    using error_type = API<api>::error_type;         \
+    static const error_type success;                 \
+    static std::string what(const error_type error); \
+  };
 
-template<>
-struct error_traits<cudaError_t> {
-  static const cudaError_t success;
-  static std::string what(const cudaError_t error);
-};
+#ifdef USE_CUDA
+STUB_ERROR_TRAITS(Driver)
+STUB_ERROR_TRAITS(CUDARuntime)
+STUB_ERROR_TRAITS(NVML)
+#endif
+STUB_ERROR_TRAITS(Universal)
 
-template<>
-struct error_traits<nvmlReturn_t> {
-  static const nvmlReturn_t success;
-  static std::string what(const nvmlReturn_t error);
-};
+#undef STUB_ERROR_TRAITS
 
-struct UniformedError {
-  inline UniformedError() : driver_error(CUDA_SUCCESS), runtime_error(cudaSuccess), nvml_error(NVML_SUCCESS) {}
+struct UniversalErrorHandler {
+  UniversalErrorHandler();
 
-  inline CUresult operator=(CUresult error) {
-    return driver_error = error;
+  template<typename Error>
+  Error as();
+
+  template<typename Error>
+  Error operator=(Error error);
+
+  template<typename Error>
+  bool operator==(const Error error) const {
+    return this->as<Error>() == error;
   }
 
-  inline cudaError_t operator=(cudaError_t error) {
-    return runtime_error = error;
-  }
+  bool operator==(const UniversalErrorHandler &error) const = delete;
 
-  inline nvmlReturn_t operator=(nvmlReturn_t error) {
-    return nvml_error = error;
-  }
-
-  bool operator==(const CUresult error) const {
-    return driver_error == error;
-  }
-
-  bool operator==(const cudaError_t error) const {
-    return runtime_error == error;
-  }
-
-  bool operator==(const nvmlReturn_t error) const {
-    return nvml_error == error;
-  }
-
-  bool operator==(const UniformedError &error) const {
-    return driver_error == error.driver_error && runtime_error == error.runtime_error && nvml_error == error.nvml_error;
-  }
-
-  template<typename Error, typename Traits=error_traits<Error>>
-  inline UniformedError &handle(Error error) {
+  template<typename Error, typename Traits = error_traits<Error>>
+  inline UniversalErrorHandler &handle(Error error) {
     *this = error;
     if (error != Traits::success) {
       throw GleemanError(Traits::what(error));
@@ -70,18 +51,25 @@ struct UniformedError {
     return *this;
   }
 
-  template<typename Error, typename=error_traits<Error>>
-  inline UniformedError &operator<<(Error error) {
+  template<typename Error, typename = error_traits<Error>>
+  inline UniversalErrorHandler &operator<<(Error error) {
     return handle(error);
   }
 
-  CUresult driver_error;
-  cudaError_t runtime_error;
-  nvmlReturn_t nvml_error;
+#define STUB_FIELD(api, name) API<api>::error_type name;
+#ifdef USE_CUDA
+  STUB_FIELD(Driver, driver_error)
+  STUB_FIELD(CUDARuntime, runtime_error)
+#ifdef USE_NVML
+  STUB_FIELD(NVML, nvml_error)
+#endif //USE_NVML
+#endif //USE_CUDA
+  STUB_FIELD(Universal, universal_error)
+#undef STUB_FIELD
 };
 
-extern UniformedError defaultErrorHandler;
+extern gleeman::UniversalErrorHandler defaultErrorHandler;
 
-}
+} //namespace gleeman
 
 #endif //GLEEMAN_ERROR_HPP

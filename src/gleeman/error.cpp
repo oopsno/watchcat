@@ -1,12 +1,13 @@
+#include <string>
+
 #include "gleeman/error.hpp"
 
 namespace gleeman {
 
-gleeman::UniformedError defaultErrorHandler;
+UniversalErrorHandler defaultErrorHandler;
 
+#ifdef USE_CUDA
 const CUresult error_traits<CUresult>::success = CUDA_SUCCESS;
-const cudaError_t error_traits<cudaError_t>::success = cudaSuccess;
-
 std::string error_traits<CUresult>::what(const CUresult error) {
   const char *name, *what_;
   CUresult internal_error;
@@ -21,12 +22,14 @@ std::string error_traits<CUresult>::what(const CUresult error) {
   return std::string(name) + ": " + std::string(what_);
 }
 
+const cudaError_t error_traits<cudaError_t>::success = cudaSuccess;
 std::string error_traits<cudaError_t>::what(const cudaError_t error) {
   std::string name = cudaGetErrorName(error);
   std::string what = cudaGetErrorString(error);
   return name + ": " + what;
 }
 
+#ifdef USE_NVML
 const nvmlReturn_t error_traits<nvmlReturn_t>::success = NVML_SUCCESS;
 std::string error_traits<nvmlReturn_t>::what(const nvmlReturn_t error) {
 #ifdef USE_NVML
@@ -35,5 +38,34 @@ std::string error_traits<nvmlReturn_t>::what(const nvmlReturn_t error) {
   throw_no_nvml();
 #endif
 }
+#endif //USE_NVML
+#endif //USE_CUDA
 
+const int error_traits<API<Universal>::error_type>::success = 0;
+std::string error_traits<API<Universal>::error_type>::what(
+    const API<Universal>::error_type error) {
+  return "ERROR CODE: " + std::to_string(error);
+}
+
+#define IMPL_FIELD_TPL(name)                                              \
+  template<>                                                              \
+  decltype(UniversalErrorHandler::name)                                   \
+  UniversalErrorHandler::as<decltype(UniversalErrorHandler::name)>() {    \
+    return UniversalErrorHandler::name;                                   \
+  }                                                                       \
+  template<>                                                              \
+  decltype(UniversalErrorHandler::name) UniversalErrorHandler::operator=( \
+      decltype(UniversalErrorHandler::name) error) {                      \
+    return UniversalErrorHandler::name = error;                           \
+  }
+
+#ifdef USE_CUDA
+IMPL_FIELD_TPL(driver_error)
+IMPL_FIELD_TPL(runtime_error)
+#ifdef USE_NVML
+IMPL_FIELD_TPL(nvml_error)
+#endif //USE_NVML
+#endif //USE_CUDA
+IMPL_FIELD_TPL(universal_error)
+#undef IMPL_FIELD_TPL
 }
