@@ -1,6 +1,6 @@
 #include <catch.hpp>
-#include <nvml.h>
 
+#include "gleeman/cuda_headers.hpp"
 #include "gleeman/traits.hpp"
 
 TEST_CASE("gleeman::_nth") {
@@ -16,6 +16,7 @@ TEST_CASE("gleeman::_nth") {
   REQUIRE(get_4th);
 }
 
+#ifdef USE_NVML
 TEST_CASE("gleeman::unary_function_traits") {
   using traits = gleeman::unary_function_traits<decltype(nvmlDeviceGetCount)>;
   bool require_uint32p = std::is_same<traits::parameter_type_0, unsigned int *>::value;
@@ -118,3 +119,4 @@ TEST_CASE("gleeman::function_traits") {
     REQUIRE(require_counter);
   }
 }
+#endif //USE_NVML

@@ -50,6 +50,7 @@ void help() {
 void query(const gpus_t &gpus) {
   const auto devices = Devices::installed_devices();
   std::cout << "Installed device(s): " << devices << std::endl;
+#ifdef USE_CUDA
   for (uint16_t device_id = 0; device_id < devices; ++device_id) {
     Device device(device_id);
     size_t free, total;
@@ -61,9 +62,11 @@ void query(const gpus_t &gpus) {
               << "\tDevice bus:    " << device.properties().pciBusID << std::endl
               << "\tDevice memory: " << free << "MB / " << total << "MB" << std::endl;
   }
+#endif
 }
 
 void hold(const gpus_t &gpus) {
+#ifdef USE_CUDA
   const auto devices = Devices::installed_devices();
   std::cout << "Installed device(s): " << devices << std::endl;
   for (uint16_t device_id = 0; device_id < devices; ++device_id) {
@@ -75,6 +78,9 @@ void hold(const gpus_t &gpus) {
   std::cout << "Pending..." << std::endl;
   std::string what_ever;
   std::cin >> what_ever;
+#else
+  std::cerr << "FATAL ERROR: Gleeman not compiled with USE_CUDA" << std::endl;
+#endif
 }
 
 int main(int argc, const char *argv[]) {

@@ -1,3 +1,4 @@
+#ifdef USE_CUDA
 #include <algorithm>
 #include <tuple>
 
@@ -5,7 +6,8 @@
 
 namespace gleeman {
 
-Placeholder::Placeholder(const Device &device) : device(device), allocated_memory_size(0ULL), address(nullptr) {}
+Placeholder::Placeholder(const Device &device)
+    : device(device), allocated_memory_size(0ULL), address(nullptr) {}
 
 Placeholder::~Placeholder() { release(); }
 
@@ -40,5 +42,5 @@ const Placeholder &Placeholder::release() {
   }
   return *this;
 }
-
 }
+#endif //USE_CUDA
