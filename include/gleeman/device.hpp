@@ -24,6 +24,7 @@ struct Device {
   }
 #endif
   std::tuple<size_t, size_t> memory_information() const;
+  void activate() const;
 
  private:
   const uint16_t device_id;
@@ -31,7 +32,6 @@ struct Device {
 #ifdef USE_CUDA
  public:
   const cudaDeviceProp &properties() const { return property; }
-  void activate() const;
 
  private:
   cudaDeviceProp property;
