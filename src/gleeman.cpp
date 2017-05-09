@@ -3,6 +3,7 @@
 
 #include <boost/program_options.hpp>
 
+#include "gleeman/context.hpp"
 #include "gleeman/device.hpp"
 #include "gleeman/placeholder.hpp"
 
@@ -85,16 +86,27 @@ void hold(const gpus_t &gpus) {
 
 int main(int argc, const char *argv[]) {
   gpus_t gpus;
-  auto vm = parse_options(argc, argv);
-  if (vm.count("gpu")) {
-    gpus = vm["gpu"].as<gpus_t>();
+  gleeman::Context context;
+  try {
+    context.initialize();
+    auto vm = parse_options(argc, argv);
+    if (vm.count("gpu")) {
+      gpus = vm["gpu"].as<gpus_t>();
+    }
+    if (vm.count("hold")) {
+      hold(gpus);
+    } else if (vm.count("query")) {
+      query(gpus);
+    } else {
+      help();
+    }
+  } catch (gleeman::GleemanError &ge) {
+    std::cerr << ge.what() << std::endl;
+    std::terminate();
+  } catch (std::exception &ex) {
+    std::cerr << ex.what() << std::endl;
+    std::terminate();
   }
-  if (vm.count("hold")) {
-    hold(gpus);
-  } else if (vm.count("query")) {
-    query(gpus);
-  } else {
-    help();
-  }
+  context.finalize();
   return 0;
 }
