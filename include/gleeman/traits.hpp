@@ -157,7 +157,7 @@ template<typename Return, typename...Parameters>
 struct function_traits<Return(Parameters...)> :
     function_traits_impl<sizeof...(Parameters)>::template traits<Return(Parameters...)> {
   typedef Return function_t(Parameters...);
-  void call(function_t function, Parameters ...param) {
+  static void call(function_t function, Parameters ...param) {
     defaultErrorHandler << function(param...);
   }
 };
