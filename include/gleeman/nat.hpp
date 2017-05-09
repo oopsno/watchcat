@@ -9,7 +9,6 @@ namespace nat {
 struct Z {
   static constexpr size_t value = 0;
 };
-constexpr size_t Z::value;
 
 template<typename Nat>
 struct S : Nat {
@@ -62,7 +61,6 @@ template<typename LHS, typename Next>
 struct mul<LHS, S<Next>> {
   using type = typename add<LHS, typename mul<LHS, Next>::type>::type;
 };
-
 }
 }
 
