@@ -20,8 +20,10 @@ struct error_traits;
 #ifdef USE_CUDA
 STUB_ERROR_TRAITS(Driver)
 STUB_ERROR_TRAITS(CUDARuntime)
+#ifdef USE_NVML
 STUB_ERROR_TRAITS(NVML)
-#endif
+#endif //USE_NVML
+#endif //USE_CUDA
 STUB_ERROR_TRAITS(Universal)
 
 #undef STUB_ERROR_TRAITS

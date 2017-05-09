@@ -30,13 +30,9 @@ std::string error_traits<cudaError_t>::what(const cudaError_t error) {
 }
 
 #ifdef USE_NVML
-const nvmlReturn_t error_traits<nvmlReturn_t>::success = NVML_SUCCESS;
+const nvmlReturn_t error_traits<nvmlReturn_t>::success = nvml_success;
 std::string error_traits<nvmlReturn_t>::what(const nvmlReturn_t error) {
-#ifdef USE_NVML
   return nvmlErrorString(error);
-#else
-  throw_no_nvml();
-#endif
 }
 #endif //USE_NVML
 #endif //USE_CUDA
@@ -46,6 +42,16 @@ std::string error_traits<API<Universal>::error_type>::what(
     const API<Universal>::error_type error) {
   return "ERROR CODE: " + std::to_string(error);
 }
+
+UniversalErrorHandler::UniversalErrorHandler() :
+#ifdef USE_CUDA
+    driver_error(CUDA_SUCCESS),
+    runtime_error{cudaSuccess},
+#ifdef USE_NVML
+    nvml_error(nvml_success),
+#endif //USE_CUDA
+#endif //USE_NVML
+    universal_error(0) {}
 
 #define IMPL_FIELD_TPL(name)                                              \
   template<>                                                              \
