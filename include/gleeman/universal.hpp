@@ -3,6 +3,10 @@
 
 #include <cstddef>
 
+#ifdef _MSC_VER
+using size_t = std::size_t;
+#endif
+
 #include "gleeman/cuda_headers.hpp"
 
 namespace gleeman {
